@@ -1,0 +1,2 @@
+/home/otutay/Desktop/cmake4Rtl/build/CMakeFiles/rebuild_cache.dir
+/home/otutay/Desktop/cmake4Rtl/build/CMakeFiles/edit_cache.dir

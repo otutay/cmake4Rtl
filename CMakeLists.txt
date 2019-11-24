@@ -2,15 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 
 project(VHDLDeneme)
 
-function(printList nameVar inVar)
-    # message(STATUS "(${nameVar}) -> found files are : ${inVar}")   
-
-    foreach (it IN ITEMS ${inVar})
-        message(STATUS "(${nameVar}) -> found files are : ${it}")   
-    endforeach()
-    
-endfunction() 
-
 function(searchDirectory srcDirectory fileSuffix outputVar)
     file(GLOB dummyFiles ${srcDirectory}/*)
 
@@ -20,18 +11,17 @@ function(searchDirectory srcDirectory fileSuffix outputVar)
         list(APPEND outputVar ${dummySrc})
     endforeach ()
 
-
-    # foreach (it IN ITEMS ${outputVar})
-    #     message(STATUS "(Src) -> found files are : ${it}")   
-    # endforeach()
-
     set(${outputVar} ${srcFiles} PARENT_SCOPE)
-    # message(STATUS "(Design) -> ${outputVar}")
     
 endfunction()
 
+function(printList nameVar inVar)
 
-
+    foreach (it IN ITEMS ${inVar})
+        message(STATUS "(${nameVar}) -> found files are : ${it}")   
+    endforeach()
+    
+endfunction() 
 
 #setting compile,simulate,sythesis directives
 set(target "xilinx")
@@ -57,33 +47,9 @@ message(STATUS "IP directories is -> ${srcIp}")
 message(STATUS "Block design directories is -> ${srcBd}")
 message(STATUS "Tcl directories is -> ${srcTcl}")
 
-# file(GLOB dummyFiles ${srcRtl}/*)
 
 searchDirectory(${srcRtl} "*vhd" vhdFiles)
-printList("Design" ${${vhdFiles}})
-# message(STATUS "(Design) -> ${vhdFiles}")
-# # message(STATUS "")
+printList("Design" "${vhdFiles}")
 
-# foreach (it IN ITEMS ${dummyFiles})
-#     message(STATUS "searching for ${it}")
-#     file(GLOB dummySrc ${it}/*.vhd)
-#     list(APPEND vhdSrc ${dummySrc})
-# endforeach ()
-
-
-# foreach (it IN ITEMS ${vhdSrc})
-#     message(STATUS "(Src) -> found files are : ${it}")   
-# endforeach()
-
-# message(STATUS "(Design) -> ${vhdSrc}")
-
-
-# add_subdirectory(srcTcl)
-# add_subdirectory(srcRtl)
-# add_subdirectory(srcIp)
-# add_subdirectory(srcConstraint)
-# add_subdirectory(srcBd)
-
-
-# message(STATUS "vhd files are ${vhdSrc}")
-
+searchDirectory(${srcConstraint} "*xdc" xdcFiles)
+printList("Constraint" "${xdcFiles}")
