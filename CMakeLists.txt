@@ -53,3 +53,5 @@ printList("Design" "${vhdFiles}")
 
 searchDirectory(${srcConstraint} "*xdc" xdcFiles)
 printList("Constraint" "${xdcFiles}")
+
+message(STATUS "deneme")
