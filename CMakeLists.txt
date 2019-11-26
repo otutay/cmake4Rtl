@@ -4,14 +4,18 @@ project(VHDLDeneme)
 
 function(searchDirectory srcDirectory fileSuffix outputVar)
     file(GLOB dummyFiles ${srcDirectory}/*)
-
     foreach (it IN ITEMS ${dummyFiles})
-        message(STATUS "searching for ${it}")
-        file(GLOB dummySrc ${it}/*.${fileSuffix})
-        list(APPEND outputVar ${dummySrc})
+        if(IS_DIRECTORY ${it})
+            message(STATUS "searching for ${it} (a subdirectory)")
+            file(GLOB dummySrc ${it}/*.${fileSuffix})
+            list(APPEND outputVar ${dummySrc})
+        else()
+            message(STATUS "adding for ${it} to file list")
+            list(APPEND outputVar ${it})
+        endif()
     endforeach ()
 
-    set(${outputVar} ${srcFiles} PARENT_SCOPE)
+    set(${outputVar} PARENT_SCOPE)
     
 endfunction()
 
@@ -36,10 +40,12 @@ message(STATUS "simulate ${simulate}")
 message(STATUS "synthesize ${synthesize}")
 
 set(srcRtl "srcRtl")
+set(srcConstraint "srcConstraint")
+set(srcBd "srcBd")
 set(srcTcl "srcTcl")
 set(srcIp "srcIp")
-set(srcBd "srcBd")
-set(srcConstraint "srcConstraint")
+
+
 
 message(STATUS "adding src directories")
 message(STATUS "VHD directories is -> ${srcRtl}")
@@ -48,10 +54,17 @@ message(STATUS "Block design directories is -> ${srcBd}")
 message(STATUS "Tcl directories is -> ${srcTcl}")
 
 
-searchDirectory(${srcRtl} "*vhd" vhdFiles)
+searchDirectory(${srcRtl} "vhd" vhdFiles)
 printList("Design" "${vhdFiles}")
 
-searchDirectory(${srcConstraint} "*xdc" xdcFiles)
+searchDirectory(${srcConstraint} "xdc" xdcFiles)
 printList("Constraint" "${xdcFiles}")
+
+searchDirectory(${srcBd} "bd" bdFiles)
+printList("Block Design" "${bdFiles}")
+
+
+searchDirectory(${srcIp} "xci" ipFiles)
+printList("Ip cores of design" "${ipFiles}")
 
 message(STATUS "deneme")
