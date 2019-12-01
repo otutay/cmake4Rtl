@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(VHDLDeneme)
+
 
 function(searchDirectory srcDirectory fileSuffix outputVar)
     file(GLOB dummyFiles ${srcDirectory}/*)
@@ -57,15 +57,17 @@ function(createProject tclLoc fpgaName boardName)
     # execute_process(COMMAND )
 endfunction()
 
+function(addSrc2Project tclLoc srcFiles)
+    message(STATUS "RTL source file will be added to the xilinx project")
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addRtl.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${srcFiles})
+endfunction()
 
 
-
-
+project(VHDLDeneme)
 #setting compile,simulate,sythesis directives
 set(FPGAName "xc7z045ffg900-2")
 set(boardName "xilinx.com:zc706:part0:1.4")
-# set(board "zc706")
-# set(projectFile ${PROJECT_NAME})
+
 
 # set(compile FALSE)
 # set(simulate TRUE)
@@ -120,6 +122,6 @@ copyFiles("${bdFiles}" "bd" "blockdesign")
 createProject(${srcTcl} ${FPGAName} ${boardName})
 
 # creatingDirectory(${PROJECT_NAME}/ip)
-
+addSrc2Project(${srcTcl} "${vhdFiles}")
 
 message(STATUS "deneme")
