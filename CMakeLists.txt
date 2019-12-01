@@ -14,24 +14,50 @@ function(searchDirectory srcDirectory fileSuffix outputVar)
             list(APPEND outputVar ${it})
         endif()
     endforeach ()
-
     set(${outputVar} PARENT_SCOPE)
-    
 endfunction()
 
 function(printList nameVar inVar)
-
     foreach (it IN ITEMS ${inVar})
         message(STATUS "(${nameVar}) -> found files are : ${it}")   
     endforeach()
-    
 endfunction() 
+
+function(creatingDirectory nameOfDirectory subDirs)
+    message(STATUS " ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}" )
+    if(NOT ${subDirs} MATCHES " ")
+        # message(STATUS ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}/${subDirs})
+        execute_process(COMMAND mkdir ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}/${subDirs})
+    else()
+        # message(STATUS ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory})
+        execute_process(COMMAND mkdir ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory})
+    endif()
+endfunction()
+
+macro(stripName fileNames suffix outputVar)
+    get_filename_component(dummyVar ${it} NAME_WE)
+    # message(STATUS "fileName is selected as -> ${dummyVar}")
+    set(outputVar ${dummyVar})
+endmacro()
+
+
+function(copyFiles fileNames suffix relLoc)
+    creatingDirectory(${PROJECT_NAME} ${relLoc})
+    foreach(it IN ITEMS ${fileNames})
+        stripName(${it} ${suffix} dummyVar)
+        creatingDirectory(${PROJECT_NAME}/${relLoc} ${dummyVar})
+        message(STATUS "files copied to -> ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${relLoc}/${dummyVar}/")
+        execute_process(COMMAND cp -r -f ${it} ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${relLoc}/${dummyVar}/)
+    endforeach()
+endfunction()
 
 #setting compile,simulate,sythesis directives
 set(target "xilinx")
-set(compile FALSE)
-set(simulate TRUE)
-set(synthesize FALSE)
+# set(projectFile ${PROJECT_NAME})
+
+# set(compile FALSE)
+# set(simulate TRUE)
+# set(synthesize FALSE)
 
 message(STATUS "project directives are as follows ---> ")
 message(STATUS "target is ${target}")
@@ -66,5 +92,19 @@ printList("Block Design" "${bdFiles}")
 
 searchDirectory(${srcIp} "xci" ipFiles)
 printList("Ip cores of design" "${ipFiles}")
+
+message(STATUS "(PROJECT LOC CREATE) creating file with the name ${PROJECT_NAME}")
+creatingDirectory(${PROJECT_NAME} " ")
+
+message(STATUS "(COPY IP) copying IP file in to the project file")
+copyFiles("${ipFiles}" "xci" "ip")
+
+message(STATUS "(COPY Block Design) copying BD files in to the project file")
+copyFiles("${bdFiles}" "bd" "blockdesign")
+
+
+
+# creatingDirectory(${PROJECT_NAME}/ip)
+
 
 message(STATUS "deneme")
