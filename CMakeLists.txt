@@ -24,7 +24,7 @@ function(printList nameVar inVar)
 endfunction() 
 
 function(creatingDirectory nameOfDirectory subDirs)
-    message(STATUS " ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}" )
+    # message(STATUS " ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}" )
     if(NOT ${subDirs} MATCHES " ")
         # message(STATUS ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}/${subDirs})
         execute_process(COMMAND mkdir ${CMAKE_CURRENT_SOURCE_DIR}/${nameOfDirectory}/${subDirs})
@@ -51,8 +51,20 @@ function(copyFiles fileNames suffix relLoc)
     endforeach()
 endfunction()
 
+function(createProject tclLoc fpgaName boardName)
+    message(STATUS "Vivado Project will be created in ${PROJECT_NAME} and with tcl ${tclLoc}")
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/createProject.tcl -tclargs ${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME} ${fpgaName} ${boardName})
+    # execute_process(COMMAND )
+endfunction()
+
+
+
+
+
 #setting compile,simulate,sythesis directives
-set(target "xilinx")
+set(FPGAName "xc7z045ffg900-2")
+set(boardName "xilinx.com:zc706:part0:1.4")
+# set(board "zc706")
 # set(projectFile ${PROJECT_NAME})
 
 # set(compile FALSE)
@@ -89,9 +101,12 @@ printList("Constraint" "${xdcFiles}")
 searchDirectory(${srcBd} "bd" bdFiles)
 printList("Block Design" "${bdFiles}")
 
-
 searchDirectory(${srcIp} "xci" ipFiles)
 printList("Ip cores of design" "${ipFiles}")
+
+searchDirectory(${srcTcl} "tcl" tclFiles)
+printList("TCL files to create project" "${tclFiles}")
+
 
 message(STATUS "(PROJECT LOC CREATE) creating file with the name ${PROJECT_NAME}")
 creatingDirectory(${PROJECT_NAME} " ")
@@ -102,7 +117,7 @@ copyFiles("${ipFiles}" "xci" "ip")
 message(STATUS "(COPY Block Design) copying BD files in to the project file")
 copyFiles("${bdFiles}" "bd" "blockdesign")
 
-
+createProject(${srcTcl} ${FPGAName} ${boardName})
 
 # creatingDirectory(${PROJECT_NAME}/ip)
 
