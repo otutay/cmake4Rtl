@@ -1,4 +1,3 @@
-
 set i 0
 
 foreach data $argv {
@@ -6,12 +5,12 @@ foreach data $argv {
         puts "(TCL) project Name 2 open -> $data"
         open_project $data
         set i 1
-   } else {
-        puts "(TCL) src 2 add -> $data"
-        add_files -norecurse $data
+    } else {
+        puts "(TCL) Constraint 2 add -> $data"
+        update_compile_order -fileset sources_1
+        add_files -fileset constrs_1 -norecurse $data
    }
 }
 update_compile_order -fileset sources_1
 
 exit
-

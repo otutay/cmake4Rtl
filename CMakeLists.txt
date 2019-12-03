@@ -58,8 +58,21 @@ function(createProject tclLoc fpgaName boardName)
 endfunction()
 
 function(addSrc2Project tclLoc srcFiles)
-    message(STATUS "RTL source file will be added to the xilinx project")
+    message(STATUS "RTL source files will be added to the xilinx project")
     execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addRtl.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${srcFiles})
+endfunction()
+
+function(addConst2Project tclLoc srcFiles)
+    message(STATUS "Constraint source files will be added to the xilinx project")
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addConstraint.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${srcFiles})
+endfunction()
+
+function(addIP2Project tclLoc relLoc suffix)
+    message(STATUS "IP/blockDesign files will be added to the xilinx project")
+    set(dummyDirect "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${relLoc}")
+    searchDirectory(${dummyDirect} ${suffix} dumyFiles)
+    printList("add ip/blockDesign -> " "${dumyFiles}")
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addIp.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${dumyFiles})
 endfunction()
 
 
@@ -121,7 +134,12 @@ copyFiles("${bdFiles}" "bd" "blockdesign")
 
 createProject(${srcTcl} ${FPGAName} ${boardName})
 
-# creatingDirectory(${PROJECT_NAME}/ip)
+
 addSrc2Project(${srcTcl} "${vhdFiles}")
+addConst2Project(${srcTcl} "${xdcFiles}")
+addIP2Project(${srcTcl})
+addIP2Project(${srcTcl} "ip" "xci")
+addIP2Project(${srcTcl} "blockdesign" "bd")
+
 
 message(STATUS "deneme")
