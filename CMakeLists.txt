@@ -53,18 +53,18 @@ endfunction()
 
 function(createProject tclLoc fpgaName boardName)
     message(STATUS "Vivado Project will be created in ${PROJECT_NAME} and with tcl ${tclLoc}")
-    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/createProject.tcl -tclargs ${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME} ${fpgaName} ${boardName})
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/createProject.tcl -tclargs ${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/project ${fpgaName} ${boardName})
     # execute_process(COMMAND )
 endfunction()
 
 function(addSrc2Project tclLoc srcFiles)
     message(STATUS "RTL source files will be added to the xilinx project")
-    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addRtl.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${srcFiles})
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addRtl.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/project/${PROJECT_NAME}.xpr ${srcFiles})
 endfunction()
 
 function(addConst2Project tclLoc srcFiles)
     message(STATUS "Constraint source files will be added to the xilinx project")
-    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addConstraint.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${srcFiles})
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addConstraint.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/project/${PROJECT_NAME}.xpr ${srcFiles})
 endfunction()
 
 function(addIP2Project tclLoc relLoc suffix)
@@ -72,7 +72,7 @@ function(addIP2Project tclLoc relLoc suffix)
     set(dummyDirect "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${relLoc}")
     searchDirectory(${dummyDirect} ${suffix} dumyFiles)
     printList("add ip/blockDesign -> " "${dumyFiles}")
-    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addIp.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.xpr ${dumyFiles})
+    execute_process(COMMAND vivado -mode tcl -source ${CMAKE_CURRENT_SOURCE_DIR}/${tclLoc}/addIp.tcl -tclargs ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/project/${PROJECT_NAME}.xpr ${dumyFiles})
 endfunction()
 
 
@@ -130,7 +130,7 @@ message(STATUS "(COPY IP) copying IP file in to the project file")
 copyFiles("${ipFiles}" "xci" "ip")
 
 message(STATUS "(COPY Block Design) copying BD files in to the project file")
-copyFiles("${bdFiles}" "bd" "blockdesign")
+copyFiles("${bdFiles}" "bd" "blkdesign")
 
 createProject(${srcTcl} ${FPGAName} ${boardName})
 
@@ -139,7 +139,7 @@ addSrc2Project(${srcTcl} "${vhdFiles}")
 addConst2Project(${srcTcl} "${xdcFiles}")
 addIP2Project(${srcTcl})
 addIP2Project(${srcTcl} "ip" "xci")
-addIP2Project(${srcTcl} "blockdesign" "bd")
+addIP2Project(${srcTcl} "blkdesign" "bd")
 
 
 message(STATUS "deneme")
